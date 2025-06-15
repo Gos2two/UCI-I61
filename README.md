@@ -1,57 +1,70 @@
-# UCI-I61: Análisis de la Readmisión a la UCI en Pacientes con Hemorràgia Intracerebral 
+# 🧠 Análisis de Readmisión a la UCI en Pacientes con Hemorragia Intracerebral (MIMIC-IV)
 
+Este proyecto analiza pacientes con **hemorragia intracerebral (ICH)** en la base de datos **MIMIC-IV**, con el objetivo de **predecir la readmisión a la UCI** mediante ingeniería de características, análisis clínico y modelado predictivo.
 
-## Objetivo
-Desarrollar un modelo que estime la probabilidad de readmisión a la UCI en pacientes con hemorragia intracerebral, identificando factores de riesgo para mejorar las estrategias de seguimiento.
+---
 
-## Hipótesis 
+## 📚 Contenido del Proyecto
 
-La combinación de variables clínicas (estado neurológico, presión arterial, comorbilidades, escalas de coma) permite predecir efectivamente la readmisión de estos pacientes.
+### 1. 🔧 Configuración Inicial
+- Conexión a Google BigQuery.
+- Autenticación con claves de servicio.
+- Preparación del entorno.
 
-## Metodología 
+### 2. 📦 Extracción de Datos
+Consulta SQL avanzada que incluye:
+- Selección de pacientes con diagnóstico ICH (ICD-9: 431, ICD-10: I610–I619).
+- Variables clínicas: signos vitales, laboratorio, escalas (GCS, APS-III).
+- Diagnósticos y tratamientos: hipertensión, neurocirugía, anticoagulantes, etc.
+- Cálculo de:
+  - Número de estancias en UCI por hospitalización.
+  - Readmisión posterior en hospitalizaciones diferentes.
 
-- Selección de Datos: Extraer de MIMIC-IV la cohorte de pacientes con hemorragia intracerebral y los datos de seguimiento tras el alta. 
-- Variables: Considerar parámetros clínicos al ingreso, escalas como el GCS, y comorbilidades. 
-- Preprocesamiento: Normalización, codificación de variables categóricas y manejo de datos desequilibrados (por ejemplo, técnicas de oversampling).
-- Modelado: Aplicar técnicas de regresión, random forest y métodos ensemble, validando con métricas como F1-score, precisión, recall y AUC. 
+> Se exporta como: `mimiciv_ich_readmission_raw.csv`
 
-## Producto/Entregable:
+### 3. 🧽 Preprocesamiento
 
-- Desarrollo del Sistema: Desarrollar una herramienta de soporte a la decisión que integre un frontend y backend en una plataforma tipo Hugging Face o Groq. La aplicación debe permitir seleccionar los datos clínicos y visualizar un score de riesgo de readmisión mediante gráficas interactivas y métricas de validación.
-- Repositorios: Los estudiantes deben crear sus cuentas en GitHub, subir el desarrollo y compartir la dirección del repositorio. o Documentación: Incluir una descripción de la funcionalidad, la arquitectura del sistema y ejemplos prácticos de uso. 
+#### 🧹 Limpieza del Dataset
+- Manejo de valores nulos.
+- Verificación de IDs duplicados o inconsistentes.
+- Creación de variable objetivo binaria: `readmitted`.
 
+#### 🧠 Feature Engineering
+- Selección estadística de diagnósticos ICD relevantes mediante asociación con readmisión.
+- Eliminación de columnas irrelevantes, con muchos nulos o que podrían inducir fuga de datos.
 
-# README from Juan Barrios: 
+#### 🔬 Imputación de Valores Faltantes
+- Evaluación de mecanismo MCAR/MAR/MNAR.
+- Imputación basada en el patrón identificado.
 
-Este proyecto utiliza datos del conjunto MIMIC-IV para predecir la readmisión a la UCI en pacientes diagnosticados con hemorragia intracerebral. Se implementa un flujo de análisis en Python, empleando BigQuery como fuente de datos y técnicas de machine learning para modelado.
+### 4. 📊 Modelado Predictivo
 
-## 📁 Estructura del repositorio
+#### Modelos Utilizados
+- `Extra Trees Classifier`
+- Técnicas de balanceo como `RandomOverSampler`
 
-- `analisis_readmision_uci_hemorragia_intracerebral.ipynb`: Notebook principal con todo el flujo de trabajo.
-- `README.md`: Descripción general del proyecto.
+#### Evaluación del Desempeño
+- Se define un entorno tipo *playground* para probar múltiples combinaciones de variables y modelos.
+- Se hace énfasis en interpretar las variables predictoras más influyentes.
 
-## ⚙️ Requisitos
+---
 
-- Cuenta en Google Cloud con acceso al dataset MIMIC-IV en BigQuery.
-- Python >= 3.7
-- Paquetes: `pandas`, `scikit-learn`, `matplotlib`, `google-cloud-bigquery`
+## ✅ Utilidad del Estudio
+Este análisis permite:
+- Anticipar qué pacientes podrían requerir una nueva estancia en UCI.
+- Optimizar recursos críticos hospitalarios.
+- Desarrollar modelos ML para soporte clínico en decisiones post-ICH.
 
-## 🚀 Instrucciones
+---
 
-1. Autenticarte en Google Cloud dentro del entorno donde se ejecute el notebook.
-2. Actualizar `project_id` en la celda de configuración.
-3. Ejecutar las celdas secuencialmente para obtener, procesar y analizar los datos.
+## 💾 Requisitos Técnicos
+- Acceso a Google BigQuery con el dataset MIMIC-IV.
+- Archivo de credenciales `.json`.
+- Librerías: `pandas`, `numpy`, `sklearn`, `google-cloud-bigquery`, etc.
 
-## 📊 Resultado
+---
 
-Se entrena un modelo de Random Forest para estimar la probabilidad de readmisión y se evalúa con métricas como F1-score y AUC. Se visualiza la curva ROC del modelo.
-
-## 🧰 Posibles mejoras
-
-- Implementar interfaz visual con Streamlit o Gradio.
-- Incorporar oversampling/undersampling para balanceo.
-- Integración en Hugging Face Spaces.
-
-## 🔐 Aviso
-
-Este proyecto utiliza datos de pacientes anonimizados del dataset MIMIC-IV con fines académicos.
+## 📁 Estructura del Proyecto
+- `analisis_readmision_uci_hemorragia_intracerebral.ipynb`: Notebook completo del flujo de análisis.
+- `data/`: Carpeta destino para guardar dataset limpio y transformado.
+- `README.md`: (este archivo)
